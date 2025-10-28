@@ -1,12 +1,8 @@
 import React from 'react';
-import MapView from './components/MapView';
+import MapPage from './MapPage';
 
-function App() {
-  return (
-    <div style={{ width: '100vw', height: '100vh', padding: '20px' }}>
-      <MapView />
-    </div>
-  );
-}
+const App = () => {
+  return <MapPage />;
+};
 
 export default App;

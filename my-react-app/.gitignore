@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+#mock ipc file
+src/dev-ipc-mock.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
