@@ -38,6 +38,7 @@ const Sidebar = ({ nodes }) => {
                   padding: "10px",
                   borderRadius: "8px",
                   marginBottom: "6px",
+                  height: "70px",
                 }}
               >
                 <div>
