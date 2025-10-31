@@ -7,24 +7,30 @@ const App = () => {
   // Node Data Receiving from Main Process
 
   const [nodes, setNodes] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const handleNodeUpdate = (_, data) => {
+    const handleNodeUpdate = (data) => {
       if (data && data.nodes) {
         setNodes(data.nodes);
       }
     };
 
-    window.electron?.ipcRenderer?.on("updateNodes", handleNodeUpdate);
+    const handleNewNotification = (data) => {
+      setNotifications((prev) => {
+        // Keep the last 50 notifications for performance
+        const newNotifications = [...prev, data];
+        return newNotifications.slice(-50);
+      });
+    }
 
-    return () => {
-      window.electron?.ipcRenderer?.removeListener("updateNodes", handleNodeUpdate);
-    };
+    window.electronAPI?.onUpdateNodes(handleNodeUpdate);
+    window.electronAPI?.onNewNotification(handleNewNotification);
   }, []);
 
   // Received nodes are passed to MapPage And NotificationCenter
 
-  return <NotificationCenter nodes={nodes} />;
+  return <NotificationCenter nodes={nodes} notifications={notifications} />;
 };
 
 export default App;
