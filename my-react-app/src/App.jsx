@@ -1,6 +1,7 @@
-import NotificationCenter from './Pages/NotificationCenter';
 import React, { useState, useEffect } from 'react';
+import NotificationCenter from './Pages/NotificationCenter';
 import MapPage from './Pages/MapPage';
+import Navigationbar from "./components/Navigationbar";
 
 const App = () => {
 
@@ -8,6 +9,7 @@ const App = () => {
 
   const [nodes, setNodes] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [activePage, setActivePage] = useState("map"); // default page
 
   useEffect(() => {
     const handleNodeUpdate = (data) => {
@@ -19,7 +21,7 @@ const App = () => {
     const handleNewNotification = (data) => {
       setNotifications((prev) => {
         // Keep the last 50 notifications for performance
-        const newNotifications = [...prev, data];
+        const newNotifications = [data ,...prev];
         return newNotifications.slice(-50);
       });
     }
@@ -30,7 +32,50 @@ const App = () => {
 
   // Received nodes are passed to MapPage And NotificationCenter
 
-  return <NotificationCenter nodes={nodes} notifications={notifications} />;
+  const renderPage = () => {
+    switch (activePage) {
+      case "map":
+        return <MapPage nodes={nodes} />;
+      case "notifications":
+        return <NotificationCenter notifications={notifications} nodes={nodes} />;
+      case "settings":
+        //return <SettingsPage />;
+      default:
+        return <MapPage nodes={nodes} />;
+    }
+  };
+
+  return (
+  <div
+    style={{
+      display: "flex",
+      height: "100vh",
+      width: "100vw",
+      overflow: "hidden",
+      backgroundColor: "#f3f4f6",
+      margin: 0,
+      padding: 0,
+    }}
+  >
+    {/* Sidebar */}
+    <Navigationbar activePage={activePage} setActivePage={setActivePage} notifications={notifications} />
+
+    {/* Main Content */}
+    <div
+      style={{
+        flex: 1,
+        height: "100vh", // ensures full viewport height
+        overflow: "hidden", // removes scroll
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "stretch",
+      }}
+    >
+      {renderPage()}
+    </div>
+  </div>
+  );
 };
 
 export default App;
