@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-#login
-login/.env
+#login-authentication
+./electron/login-authentication-system/.env
+./electron/login-authentication-system/node_modules

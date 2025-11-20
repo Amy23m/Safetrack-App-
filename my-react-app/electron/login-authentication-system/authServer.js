@@ -39,8 +39,13 @@ app.get('/login', checkNotAuthenticated, (req,res) => {
     res.render('login.ejs')
 })
 
+app.get('/public/styles.css', checkNotAuthenticated, (req, res) => {
+    res.sendFile(__dirname + '/public/styles.css');
+})
+
+
 app.post('/login', checkNotAuthenticated, passport.authenticate( 'local', {
-    successRedirect: '/',
+    successRedirect: 'http://localhost:5173/',
     failureRedirect: '/login',
     failureFlash: true
 }))
