@@ -66,7 +66,7 @@ function createMainWindow() {
     mainWindow.loadURL('http://localhost:5173/');
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../my-react-app/build/index.html'));
+    win.loadFile(path.join(__dirname, '../build/index.html'));
   }
 
   initIPC(mainWindow); // keep your IPC EXACTLY the same

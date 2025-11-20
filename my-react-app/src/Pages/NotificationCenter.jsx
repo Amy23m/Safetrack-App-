@@ -1,4 +1,5 @@
-import react from 'react';
+import React, {useState} from 'react';
+
 
 const getTimeAgo = (timestamp) => {
   const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
@@ -128,7 +129,31 @@ const icons = {
         </svg>)
 };
 
+const menuOptionStyle = {
+  width: "100%",
+  textAlign: "left",
+  padding: "10px",
+  background: "none",
+  border: "none",
+  color: "white",
+  cursor: "pointer",
+  fontSize: "14px"
+};
+
+
 const NotificationCenter = ({ nodes, notifications }) => {
+
+  const [filter, setFilter] = useState('all');
+  const [showMenu, setShowMenu] = useState(false);
+
+  const filteredNotifications = notifications.filter(notif => {
+            // Filter options
+           if (filter === 'all') return true;
+           else if (filter === 'Alerts') return notif.type.toLowerCase() === 'sos';
+           else if (filter === 'System') return notif.type.toLowerCase() === 'system';
+           else if (filter === 'GPS') return notif.type.toLowerCase() === 'gps';
+          });
+
   return (
     <div style={{
         backgroundColor: "#020618",
@@ -137,18 +162,73 @@ const NotificationCenter = ({ nodes, notifications }) => {
         boxSizing: "border-box",
         display: "flex",
         height: "100vh",
-        width: "100vw",
+        width: "100%",
         flexDirection: "column",
-        alignItems: "left"
+        alignItems: "left",
+        scrollbarWidth: "none",
     }}>
+        
         <h2>Notification Center</h2>
-        <p>This is where notifications will be displayed.</p>
+
+        {/* FILTER BUTTON */}
+        <div style={{ 
+            display: "flex", 
+            justifyContent: "flex-end", 
+            marginBottom: "10px",
+            marginRight: "20px",
+            position: "relative"
+        }}>
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            style={{
+              background: "#1e293b",
+              color: "white",
+              padding: "8px 14px",
+              borderRadius: "6px",
+              border: "1px solid #334155",
+              cursor: "pointer",
+            }}
+          >
+            Filter ▾
+          </button>
+
+          {/* DROPDOWN MENU */}
+          {showMenu && (
+            <div
+              style={{
+                position: "absolute",
+                right: 0,
+                top: "40px",
+                background: "#1e293b",
+                border: "1px solid #334155",
+                padding: "8px",
+                borderRadius: "6px",
+                width: "140px",
+                zIndex: 999,
+              }}
+            >
+              <button style={menuOptionStyle} onClick={() => { setFilter("all"); setShowMenu(false); }}>
+                All
+              </button>
+              <button style={menuOptionStyle} onClick={() => { setFilter("Alerts"); setShowMenu(false); }}>
+                Alerts
+              </button>
+              <button style={menuOptionStyle} onClick={() => { setFilter("System"); setShowMenu(false); }}>
+                System
+              </button>
+              <button style={menuOptionStyle} onClick={() => { setFilter("GPS"); setShowMenu(false); }}>
+                GPS
+              </button>
+            </div>
+          )}
+        </div>
+        
 
         <div style={{ flexGrow: 1, overflowY: "auto" }}>
         { notifications.length === 0 ? (
           <p style={{ color: "#9ca3af" }}>No Notifications</p>
         ) : (
-          notifications.map((notif) => {
+          filteredNotifications.map((notif) => {
             const alertType = notif.type.toLowerCase();
             const alertColor = () => {
               if (alertType === "sos") return "#ef4444"; // red
@@ -180,8 +260,9 @@ const NotificationCenter = ({ nodes, notifications }) => {
                   backgroundColor: "#0f172b",
                   padding: "10px",
                   borderRadius: "8px",
-                  marginBottom: "6px",
+                  margin: "6px 20px 6px 0px", 
                   height: "70px",
+                  
                 }}
               >
                 <div 
