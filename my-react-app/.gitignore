@@ -26,3 +26,6 @@ dist-ssr
 #login-authentication
 ./electron/login-authentication-system/.env
 ./electron/login-authentication-system/node_modules
+
+# Local persisted user store created by Electron IPC auth
+electron/users.json

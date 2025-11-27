@@ -1,55 +1,35 @@
-const { app, BrowserWindow, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const { fork } = require('child_process');   // ⬅ needed to run auth server
 const { initIPC } = require("./ipcHandlers.cjs");
+const auth = require('./auth.cjs');
 
 let loginWindow;
 let mainWindow;
 
 // ----------------------
-//  START LOCAL AUTH SERVER
-// ----------------------
-function startAuthServer() {
-  const serverPath = path.join(__dirname, 'login-authentication', 'authServer.js');
-
-  const child = fork(serverPath, {
-    stdio: 'ignore', // prevents console spam in packaged exe
-    detached: true
-  });
-
-  child.unref(); // let Electron exit independently
-
-  console.log("Auth server started:", serverPath);
-}
-
-// ----------------------
-//   LOGIN WINDOW
+//   LOGIN WINDOW (React-based)
 // ----------------------
 function createLoginWindow() {
   loginWindow = new BrowserWindow({
     width: 500,
     height: 700,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  // Load the login page from the auth server
-  loginWindow.loadURL('http://localhost:3000/login');
-
-  // Detect successful login
-  loginWindow.webContents.on('will-redirect', (event, newUrl) => {
-    if (newUrl.startsWith('http://localhost:3000/success')) {
-      event.preventDefault();
-      loginWindow.close();
-      createMainWindow();
-    }
-  });
+  if (process.env.NODE_ENV === 'development') {
+    loginWindow.loadURL('http://localhost:5173/login');
+  } else {
+    const indexPath = path.join(__dirname, '../build/index.html');
+    loginWindow.loadFile(indexPath, { hash: '/login' });
+  }
 }
 
 // ----------------------
-//  YOUR ORIGINAL MAIN WINDOW
+//  MAIN WINDOW
 // ----------------------
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -66,21 +46,51 @@ function createMainWindow() {
     mainWindow.loadURL('http://localhost:5173/');
     mainWindow.webContents.openDevTools();
   } else {
-    win.loadFile(path.join(__dirname, '../build/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../build/index.html'));
   }
 
-  initIPC(mainWindow); // keep your IPC EXACTLY the same
+  initIPC(mainWindow);
 }
 
+// ----------------------
+//  IPC AUTH HANDLERS
+// ----------------------
+ipcMain.handle('auth:login', async (event, { email, password }) => {
+  try {
+    const user = await auth.login(email, password);
+    if (user) {
+      if (loginWindow && !loginWindow.isDestroyed()) loginWindow.close();
+      createMainWindow();
+      return { success: true };
+    }
+    return { success: false, message: 'Invalid credentials' };
+  } catch (e) {
+    return { success: false, message: e.message };
+  }
+});
+
+ipcMain.handle('auth:register', async (event, { name, email, password }) => {
+  try {
+    const created = await auth.register({ name, email, password });
+    if (created) return { success: true };
+    return { success: false, message: 'Registration failed' };
+  } catch (e) {
+    return { success: false, message: e.message };
+  }
+});
+
+ipcMain.handle('auth:logout', async () => {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+  createLoginWindow();
+  return { success: true };
+});
 
 // ----------------------
 //   APP STARTUP
 // ----------------------
 app.whenReady().then(() => {
-  startAuthServer();            // ⬅ Start Passport authentication server
-  setTimeout(createLoginWindow, 1000);  // ⬅ Wait a moment for server to fully boot
+  createLoginWindow();
 });
-
 
 // ----------------------
 //   EXIT HANDLING

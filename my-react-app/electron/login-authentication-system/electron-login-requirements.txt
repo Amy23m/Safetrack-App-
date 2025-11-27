@@ -1,0 +1,17 @@
+# Requirements / install instructions for `my-react-app/electron/login-authentication-system`
+# Use PowerShell on Windows. Run from that folder.
+
+# 1) Basic install (recommended)
+# Installs all dependencies and devDependencies listed in package.json
+npm install
+
+# 2) New IPC-based approach (this repo has been migrated)
+# Install the lightweight pure-JS bcrypt implementation used by the Electron main process
+npm install bcryptjs@^2.4.3
+
+# Notes / prerequisites
+# - This project no longer requires starting an Express auth server; authentication runs inside the Electron main process
+#   using IPC and a local JSON user store (`electron/users.json`).
+# - If you still prefer the previous Express-based server, those files remain in the `login-authentication-system` folder,
+#   but the Electron main process was updated to use IPC-based auth instead.
+# - Install Node.js (LTS) and npm: https://nodejs.org/

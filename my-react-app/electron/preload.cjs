@@ -1,4 +1,4 @@
-// electron/preload.js
+// electron/preload.cjs
 const { contextBridge, ipcRenderer } = require("electron");
 
 // Expose safe APIs to the renderer (frontend)
@@ -9,14 +9,25 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // ---- Listen for updates from backend ----
   onUpdateNodes: (callback) => {
-    // Remove any existing listeners before adding new one
     ipcRenderer.removeAllListeners("updateNodes");
     return ipcRenderer.on("updateNodes", (_, data) => callback(data));
   },
 
   onNewNotification: (callback) => {
-    // Remove any existing listeners before adding new one
     ipcRenderer.removeAllListeners("newNotification");
     return ipcRenderer.on("newNotification", (_, data) => callback(data));
   },
+
+  // ---- Authentication API (IPC invoke) ----
+  login: async (credentials) => {
+    return await ipcRenderer.invoke('auth:login', credentials);
+  },
+
+  register: async (credentials) => {
+    return await ipcRenderer.invoke('auth:register', credentials);
+  },
+
+  logout: async () => {
+    return await ipcRenderer.invoke('auth:logout');
+  }
 });
