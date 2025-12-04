@@ -1,4 +1,3 @@
-/* Auth styles (ported from the original auth server styles) */
 * {
   margin: 0;
   padding: 0;
@@ -9,21 +8,22 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* Background similar to the dashboard screenshot */
 .auth-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(150deg, #020618, #0b218a);
-  background-size: cover;
+  background: #020617; /* Deep navy */
 }
 
+/* Dark card box */
 .auth-box {
   background-color: #0f172b;
   padding: 40px;
   border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 25px rgba(0, 0, 50, 0.6);
   width: 350px;
   text-align: center;
 }
@@ -35,57 +35,65 @@ body {
   margin-bottom: 20px;
 }
 
+/* Input groups */
 .input-group {
-  margin: 12px 0;
+  margin: 15px 0;
   text-align: left;
 }
 
 .input-group label {
   display: block;
   font-size: 14px;
-  color: #ffffff;
+  color: #cbd5e1; /* soft slate text */
 }
 
+/* Dark input style */
 .input-group input {
   width: 100%;
   padding: 12px;
   margin-top: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid #334155; /* dark border */
   border-radius: 8px;
   font-size: 16px;
-  background-color: #f7f7f7;
-  transition: 0.3s ease-in-out;
+  background-color: #1e293b; /* dark slate bg */
+  color: white;
+  transition: 0.25s ease;
 }
 
+/* Blue glow focus */
 .input-group input:focus {
-  border-color: #0b218a;
-  background-color: #0b218a;
+  border-color: #3b82f6; /* neon blue */
+  box-shadow: 0 0 8px #3b82f655;
   outline: none;
 }
 
-.auth-button {
+/* Blue login button */
+.auth-button,
+button { /* keep compatibility if your form uses <button> */
   width: 100%;
   padding: 15px;
-  background-color: #FF6B8C;
+  background-color: #1d4ed8; /* strong blue */
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 18px;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: 0.25s ease;
 }
 
-.auth-button:hover {
-  background-color: #D95F7A;
+.auth-button:hover,
+button:hover {
+  background-color: #2563eb; /* lighter blue hover */
 }
 
+/* Links */
 .auth-links {
   margin-top: 15px;
   font-size: 14px;
 }
 
 .auth-links a {
-  color: #9C2F82;
+  color: #60a5fa; /* neon blue */
   text-decoration: none;
   font-weight: bold;
 }
@@ -94,12 +102,14 @@ body {
   text-decoration: underline;
 }
 
+/* Dark mode error box */
 .error-message {
-  background-color: #ffcccb;
-  color: #d8000c;
+  background-color: #7f1d1d; /* dark red */
+  color: #fecaca; /* soft red text */
   padding: 10px;
   margin-bottom: 20px;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 14px;
   text-align: center;
+  border: 1px solid #dc2626;
 }
